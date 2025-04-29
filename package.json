@@ -2,7 +2,7 @@
   "name": "bolt-expo-starter",
   "main": "expo-router/entry",
   "version": "1.0.0",
-  "private": true,
+  "private": false,
   "scripts": {
     "dev": "EXPO_NO_TELEMETRY=1 expo start",
     "build:web": "expo export --platform web",
