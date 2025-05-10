@@ -6,6 +6,7 @@ export default function Index() {
   const { onboardingData, isLoading } = useOnboarding();
   const router = useRouter();
 
+
   useEffect(() => {
     if (!isLoading) {
       if (!onboardingData.isComplete) {

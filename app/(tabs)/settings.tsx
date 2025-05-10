@@ -2,10 +2,12 @@ import { View, Text, StyleSheet, Switch, TouchableOpacity, ScrollView } from 're
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/ThemeContext';
 import Header from '@/components/Header';
-import { Bell, Globe, DollarSign, RefreshCw, CircleHelp as HelpCircle, Info } from 'lucide-react-native';
+import { Bell, MapPinHouse, Info,  CircleHelp as HelpCircle, Phone } from 'lucide-react-native';
+import { useOnboarding } from '@/context/OnboardingContext';
 
 export default function SettingsScreen() {
   const { theme, toggleTheme } = useTheme();
+  const { onboardingData} = useOnboarding();
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -14,29 +16,27 @@ export default function SettingsScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            Display
+            User Information
           </Text>
           
           <View style={[styles.settingItem, { backgroundColor: theme.colors.cardBackground }]}>
-            <Text style={[styles.settingLabel, { color: theme.colors.text }]}>Dark Mode</Text>
-            <Switch
-              value={true}
-              onValueChange={toggleTheme}
-              trackColor={{ false: '#767577', true: theme.colors.primary }}
-              thumbColor="#f4f3f4"
-            />
+            <Text style={[styles.settingLabel, { color: theme.colors.text }]}>Phone Number</Text>
+            <View style={styles.valueContainer}>
+              <Text style={[styles.valueText, { color: theme.colors.secondaryText }]}>{onboardingData.phoneNumber}</Text>
+              <Phone size={18} color={theme.colors.secondaryText} />
+            </View>
           </View>
           
           <View style={[styles.settingItem, { backgroundColor: theme.colors.cardBackground }]}>
-            <Text style={[styles.settingLabel, { color: theme.colors.text }]}>Auto-refresh Interval</Text>
+            <Text style={[styles.settingLabel, { color: theme.colors.text }]}>City</Text>
             <View style={styles.valueContainer}>
-              <Text style={[styles.valueText, { color: theme.colors.secondaryText }]}>5s</Text>
-              <RefreshCw size={18} color={theme.colors.secondaryText} />
+              <Text style={[styles.valueText, { color: theme.colors.secondaryText }]}>{onboardingData.city}</Text>
+              <MapPinHouse size={18} color={theme.colors.secondaryText} />
             </View>
           </View>
         </View>
         
-        <View style={styles.section}>
+        {/* <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
             Preferences
           </Text>
@@ -57,7 +57,7 @@ export default function SettingsScreen() {
             </View>
           </View>
         </View>
-        
+         */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
             Notifications

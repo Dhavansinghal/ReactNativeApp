@@ -208,7 +208,6 @@ export const connectWebSocket = (newCallbacks: WebSocketCallbacks) => {
       });
     }
     callbacks.onFullRefresh(data);
-    
   });
 
   sock.on('disconnect', () => {

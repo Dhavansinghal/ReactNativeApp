@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { useTheme } from '@/context/ThemeContext';
 import { useOnboarding } from '@/context/OnboardingContext';
 import { Phone, MapPin } from 'lucide-react-native';
-
+import { saveUser } from '@/services/appwrite';
 
 
 export default function OnboardingScreen() {
@@ -22,6 +22,8 @@ export default function OnboardingScreen() {
   const handleSubmit = async () => {
     if (PhoneNumber && City) {
       
+      await saveUser(PhoneNumber, City); 
+
       updateOnboardingData({
         phoneNumber: PhoneNumber,
         city: City,

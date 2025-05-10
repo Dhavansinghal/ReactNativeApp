@@ -3,9 +3,11 @@ import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { OnboardingProvider } from '@/context/OnboardingContext';
+import { ensureSession } from '@/services/appwrite';
 
 
 import './global.css';
+import { useEffect, useState } from 'react';
 
 function InitialLayout() {
 
@@ -23,6 +25,17 @@ function InitialLayout() {
 
 export default function RootLayout() {
   useFrameworkReady();
+  
+  const [ready, setReady] = useState(false);
+  
+  useEffect(() => {
+    (async () => {
+      await ensureSession();
+      setReady(true);
+    })();
+  }, []);
+
+  if (!ready) return null;  
 
   return (
     <ThemeProvider>

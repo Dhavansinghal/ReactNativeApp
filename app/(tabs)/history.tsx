@@ -52,6 +52,10 @@ export default function HistoryScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <Text style={[styles.version, { color: theme.colors.secondaryText }]}>
+        <br/>Feature in development<br/>
+        Sample data shown below.
+      </Text>
       <Header title="Price History" />
       
       <FlatList
@@ -62,7 +66,7 @@ export default function HistoryScreen() {
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         ListHeaderComponent={() => (
           <Text style={[styles.headerText, { color: theme.colors.secondaryText }]}>
-            Recent Price Updates
+            Recent Price Updates <br/>
           </Text>
         )}
       />
@@ -92,6 +96,12 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 12,
+  },
+  version:{
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 20,
+
   },
   metalInfo: {
     flexDirection: 'row',

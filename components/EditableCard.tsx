@@ -1,4 +1,5 @@
 import React from 'react';
+import {  useState } from 'react';
 import { StyleSheet, View, Text, TextInput } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -6,11 +7,23 @@ interface EditableCardProps {
   label: string;
   value: string;
   type: string;
-  onChangeText: ({price,type} :{price:String,type:String}) => void;
+  // onChangeText: (price :String) => void;
+  onBlueText:({price,type}:{price:string,type:string})=> void;
 }
 
-export default function EditableCard({ label, type, value, onChangeText }: EditableCardProps) {
+export default function EditableCard({ label, type, value,onBlueText }: EditableCardProps) {
   const { theme } = useTheme();
+
+  const [inputValue, setInputValue] = useState(value);
+
+  const handleChange =(price:string) => {
+    setInputValue(price);
+  }
+
+  const handleBlur = () => {
+    onBlueText({price: inputValue,type:type } ); 
+  }
+
 
   return (
     <View style={[
@@ -22,8 +35,9 @@ export default function EditableCard({ label, type, value, onChangeText }: Edita
       <Text style={[styles.label, { color: theme.colors.secondaryText }]}>{label}</Text>
       <TextInput
         style={styles.input}
-        value={value}
-        onChangeText={(price) => onChangeText({price, type: type}) }
+        value={inputValue}
+        onChangeText={(price) => handleChange(price) }
+        onBlur={handleBlur}
         keyboardType="numeric"
         maxLength={10}
       />

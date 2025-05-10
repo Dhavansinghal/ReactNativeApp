@@ -13,8 +13,6 @@ export default function TabLayout() {
 
   useEffect(() => {
       if (!onboardingData.isComplete) {
-  
-        
         
         router.replace('/onboarding');
       }

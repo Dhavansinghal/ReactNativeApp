@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { useTheme } from '@/context/ThemeContext';
 import { useOnboarding } from '@/context/OnboardingContext';
 import { Coins, Gem } from 'lucide-react-native';
+import { addPriceUpdate } from '@/services/appwrite';
 
 export default function PricingScreen() {
   const { theme } = useTheme();
@@ -12,14 +13,22 @@ export default function PricingScreen() {
   const [SilverOn, setSilverOn] = useState(String);
 
   const handleSubmit = async () => {
+    const g = parseFloat(GoldOn) || 0;
+    const s = parseFloat(SilverOn) || 0;
+
     await updateOnboardingData({ 
       isComplete: true,
-      goldOn: parseFloat(GoldOn) || 0,
-      silverOn: parseFloat(SilverOn) || 0
+      goldOn: g,
+      silverOn: s
     });
+
+    await addPriceUpdate(onboardingData.phoneNumber , onboardingData.city, 'Gold', g); 
+    await addPriceUpdate(onboardingData.phoneNumber , onboardingData.city, 'Silver', s); 
+    
 
     router.replace('/(tabs)');
   };
+
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>

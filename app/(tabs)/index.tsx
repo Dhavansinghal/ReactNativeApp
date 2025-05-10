@@ -11,11 +11,14 @@ import EditableCard from '@/components/EditableCard';
 import HighLowPriceCard from '@/components/HighLowPriceCard';
 import { router } from 'expo-router';
 import { useOnboarding } from '@/context/OnboardingContext';
+import { addPriceUpdate } from '@/services/appwrite';
 
 export default function PricesScreen() {
   const { theme } = useTheme();
   const [goldPrice, setGoldPrice] = useState<MetalPrice | null>(null);
   const [silverPrice, setSilverPrice] = useState<MetalPrice | null>(null);
+
+
 
   const [listingData, setListingData] = useState<MetalData[]>();
 
@@ -31,17 +34,23 @@ export default function PricesScreen() {
   }, [isLoading, onboardingData.isComplete]);
 
 
-  const updateOnPrices =({price,type} :{price:String,type:String}) =>{
+  const updateOnPrices = async ({price,type} :{price:String,type:String}) =>{
     if(type == "goldOn"){
       updateOnboardingData({ 
         goldOn: parseFloat(price.toString()) || 0,
       });
+
+      await addPriceUpdate(onboardingData.phoneNumber , onboardingData.city, 'Gold', parseFloat(price.toString()) || 0); 
     }
     else{ 
       updateOnboardingData({ 
         silverOn: parseFloat(price.toString()) || 0,
       });
+      
+      await addPriceUpdate(onboardingData.phoneNumber , onboardingData.city, 'Silver', parseFloat(price.toString()) || 0); 
+          
     }
+
   }
   const updateGoldPrice = (data: MetalPrice) => {
     setGoldPrice(data);
@@ -74,6 +83,8 @@ export default function PricesScreen() {
     }, [setupWebSocket])
   );
 
+  const testGold = listingData?.[0] ?? undefined; 
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     closeWebSocket();
@@ -105,6 +116,7 @@ export default function PricesScreen() {
                   time={goldPrice?.time}
                   loading={loading}
                   priceOn={onboardingData.goldOn}
+                  perValue={'per 10Gm'}
                   metalType="gold"
                 />
                 <PriceCard
@@ -115,6 +127,7 @@ export default function PricesScreen() {
                   changePercent={silverPrice?.changePercent}
                   time={goldPrice?.time}
                   priceOn={onboardingData.silverOn}
+                  perValue={'per 1Kg'}
                   loading={loading}
                   metalType="silver"
                 />
@@ -124,13 +137,13 @@ export default function PricesScreen() {
                   label="GOLD ON" 
                   type="goldOn"
                   value={onboardingData.goldOn.toString()}
-                  onChangeText={({price,type}) => updateOnPrices({ price, type: 'goldOn' })}
+                  onBlueText={({price,type}) => updateOnPrices({ price, type: type })}
                 />
                 <EditableCard 
                   label="SILVER ON" 
                   type="silverOn"
                   value={onboardingData.silverOn.toString()}
-                  onChangeText={({price,type}) => updateOnPrices({ price, type: 'silverOn' })}
+                  onBlueText={({price,type}) => updateOnPrices({ price, type: type })}
                 />
               </View>
             </>
@@ -155,9 +168,91 @@ export default function PricesScreen() {
                   />
                 )}
               />
+              {/* Temp Component to fix date key values */}
+              <View style={[
+                      styles.smallContainer, 
+                      { 
+                        backgroundColor: theme.colors.cardBackground
+                      }
+                    ]}>
+                <View style={styles.header}>
+                  <Text style={styles.label}>{testGold?.symbol.toUpperCase()}</Text>
+                </View>
+                <View style={styles.highLowContainer}>
+                  <View style={styles.highLowItem}>
+                    <Text style={styles.highLowLabel}> Ask </Text>
+                    <Text style={styles.highValue}>{testGold?.Ask}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.highLowContainer}>
+                  <View style={styles.highLowItem}>
+                    <Text style={styles.highLowLabel}> Bid </Text>
+                    <Text style={styles.highValue}>{testGold?.Bid}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.highLowContainer}>
+                  <View style={styles.highLowItem}>
+                    <Text style={styles.highLowLabel}> Open </Text>
+                    <Text style={styles.highValue}>{testGold?.Open}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.highLowContainer}>
+                  <View style={styles.highLowItem}>
+                    <Text style={styles.highLowLabel}> Close </Text>
+                    <Text style={styles.highValue}>{testGold?.Close}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.highLowContainer}>
+                  <View style={styles.highLowItem}>
+                    <Text style={styles.highLowLabel}> High </Text>
+                    <Text style={styles.highValue}>{testGold?.High}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.highLowContainer}>
+                  <View style={styles.highLowItem}>
+                    <Text style={styles.highLowLabel}> Low </Text>
+                    <Text style={styles.highValue}>{testGold?.Low}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.highLowContainer}>
+                  <View style={styles.highLowItem}>
+                    <Text style={styles.highLowLabel}> LTP </Text>
+                    <Text style={styles.highValue}>{testGold?.LTP}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.highLowContainer}>
+                  <View style={styles.highLowItem}>
+                    <Text style={styles.highLowLabel}> Difference </Text>
+                    <Text style={styles.highValue}>{testGold?.Difference}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.highLowContainer}>
+                  <View style={styles.highLowItem}>
+                    <Text style={styles.highLowLabel}> Time </Text>
+                    <Text style={styles.highValue}>{testGold?.Time}</Text>
+                  </View>
+                </View>
+
+                <View style={styles.highLowContainer}>
+                  <View style={styles.highLowItem}>
+                    <Text style={styles.highLowLabel}> Name </Text>
+                    <Text style={styles.highValue}>{testGold?.Name}</Text>
+                  </View>
+                </View>
+              </View>
+
+
               <View style={styles.infoContainer}>
                 <Text style={[styles.infoText, { color: theme.colors.secondaryText }]}>
-                  All prices are in Rs per Gm ounce
+                  All prices are in T&C
                 </Text>
                 <Text style={[styles.infoText, { color: theme.colors.secondaryText }]}>
                   Data refreshes automatically in real-time
@@ -185,6 +280,11 @@ export default function PricesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  smallContainer: {
+    marginBottom: 16,
+    borderRadius: 12,
+    padding: 12,
   },
   scrollContent: {
     padding: 16,
@@ -215,5 +315,39 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop:5,
     marginBottom:5
+  },
+
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  label: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '500',
+  },
+  value: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '500',
+  },
+  highLowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  highLowItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  highLowLabel: {
+    color: 'white',
+    fontSize: 16,
+    marginRight: 12,
+  },
+  highValue: {
+    color: '#4CAF50', // Green color
+    fontSize: 16,
+    fontWeight: 'bold',
   }
 });

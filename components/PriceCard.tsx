@@ -12,6 +12,7 @@ type PriceCardProps = {
   loading: boolean;
   time?: string;
   priceOn?:number;
+  perValue?:string;
   metalType: 'gold' | 'silver';
 };
 
@@ -24,6 +25,7 @@ export default function PriceCard({
   loading,
   time,
   priceOn,
+  perValue,
   metalType,
 }: PriceCardProps) {
   const { theme } = useTheme();
@@ -99,9 +101,9 @@ export default function PriceCard({
         ) : (
          
             <Text style={[styles.price, { color: theme.colors.text }]}>
-              ₹ {(price ? (parseFloat(price.toFixed(2)) + parseFloat(price.toFixed(2))).toFixed(2) : '0.00') + ' '}
+              ₹ {( (price ?? 0) + (priceOn ?? 0) ).toFixed(2) + ' '}
                <Text style={[styles.unit, { color: theme.colors.secondaryText }]}>
-                per Gm
+                {perValue}
               </Text>
             </Text>
         )}
