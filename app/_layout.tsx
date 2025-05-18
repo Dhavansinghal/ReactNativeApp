@@ -10,7 +10,7 @@ import './global.css';
 import { useEffect, useState } from 'react';
 
 function InitialLayout() {
-
+  
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />

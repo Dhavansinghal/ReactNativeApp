@@ -4,8 +4,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 type OnboardingData = {
   phoneNumber: string;
   city: string;
+  name: string;
+  shopName: string;
   goldOn: number;
   silverOn: number;
+  goldBuyOn: number;
+  goldSellOn: number;
+  silverBuyOn: number;
+  silverSellOn: number;
+
+  selectedGoldId :string;
+  selectedSilverId:string;
   isComplete: boolean;
 };
 
@@ -18,8 +27,16 @@ type OnboardingContextType = {
 const defaultOnboardingData: OnboardingData = {
   phoneNumber: '',
   city: '',
+  name: '',
+  shopName: '',
   goldOn: 0,
+  goldBuyOn: 0,
+  goldSellOn: 0,
+  silverBuyOn:0,
+  silverSellOn: 0,
   silverOn: 0,
+  selectedGoldId:'gold',
+  selectedSilverId:'silver',
   isComplete: false,
 };
 

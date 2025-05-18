@@ -130,18 +130,19 @@ import { MetalPrice } from '@/types/metals';
 let sock: any = null;
 
 type WebSocketCallbacks = {
-  onGoldUpdate: (data: MetalPrice) => void;
-  onSilverUpdate: (data: MetalPrice) => void;
+  // onGoldUpdate: (data: MetalPrice) => void;
+  // onSilverUpdate: (data: MetalPrice) => void;
   onFullRefresh:  (data: any) => void;
   onOpen?: () => void;
   onError?: (error: Event) => void;
 };
 
 let callbacks: WebSocketCallbacks = {
-  onGoldUpdate: () => {},
+  // onGoldUpdate: () => {},
   onFullRefresh: () => {},
-  onSilverUpdate: () => {},
+  // onSilverUpdate: () => {},
 };
+
 
 export const connectWebSocket = (newCallbacks: WebSocketCallbacks) => {
   callbacks = newCallbacks;
@@ -187,26 +188,33 @@ export const connectWebSocket = (newCallbacks: WebSocketCallbacks) => {
 
 
     // Live rate handling can be done similarly
-    const liveGold = data.find((item: any) => item.symbol === 'gold');
-    const liveSilver = data.find((item: any) => item.symbol === 'silver');
+    // const goldSymbol = onboardingData.selectedGoldId ? onboardingData.selectedGoldId : 'gold' ;
+    // const silverSymbol = onboardingData.selectedSilverId ? onboardingData.selectedSilverId : 'silver' ;
 
-    if (liveGold) {
-      callbacks.onGoldUpdate({
-        price: parseFloat(liveGold.Bid),
-        change: parseFloat(liveGold.Difference),
-        changePercent: (parseFloat(liveGold.Difference) / parseFloat(liveGold.Bid)) * 100,
-        time: liveGold.Time
-      });
-    }
 
-    if (liveSilver) {
-      callbacks.onSilverUpdate({
-        price: parseFloat(liveSilver.Bid),
-        change: parseFloat(liveSilver.Difference),
-        changePercent: (parseFloat(liveSilver.Difference) / parseFloat(liveSilver.Bid)) * 100,
-        time: liveGold.Time
-      });
-    }
+    // const liveGold = data.find((item: any) => item.symbol === goldSymbol);
+    // const liveSilver = data.find((item: any) => item.symbol === silverSymbol);
+    
+    
+    // if (liveGold) {
+    //   callbacks.onGoldUpdate({
+    //     buy: parseFloat(liveGold.Bid),
+    //     sell: parseFloat(liveGold.Ask),
+    //     change: parseFloat(liveGold.Difference),
+    //     changePercent: (parseFloat(liveGold.Difference) / parseFloat(liveGold.Bid)) * 100,
+    //     time: liveGold.Time
+    //   });
+    // }
+
+    // if (liveSilver) {
+    //   callbacks.onSilverUpdate({
+    //     buy: parseFloat(liveSilver.Bid),
+    //     sell: parseFloat(liveSilver.Ask),
+    //     change: parseFloat(liveSilver.Difference),
+    //     changePercent: (parseFloat(liveSilver.Difference) / parseFloat(liveSilver.Bid)) * 100,
+    //     time: liveGold.Time
+    //   });
+    // }
     callbacks.onFullRefresh(data);
   });
 

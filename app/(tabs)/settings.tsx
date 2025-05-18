@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet, Switch, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/context/ThemeContext';
 import Header from '@/components/Header';
-import { Bell, MapPinHouse, Info,  CircleHelp as HelpCircle, Phone } from 'lucide-react-native';
+import { Bell, MapPinHouse, Info,  CircleHelp as HelpCircle, Phone, User, Store } from 'lucide-react-native';
 import { useOnboarding } from '@/context/OnboardingContext';
 
 export default function SettingsScreen() {
@@ -32,6 +32,22 @@ export default function SettingsScreen() {
             <View style={styles.valueContainer}>
               <Text style={[styles.valueText, { color: theme.colors.secondaryText }]}>{onboardingData.city}</Text>
               <MapPinHouse size={18} color={theme.colors.secondaryText} />
+            </View>
+          </View>
+
+          <View style={[styles.settingItem, { backgroundColor: theme.colors.cardBackground }]}>
+            <Text style={[styles.settingLabel, { color: theme.colors.text }]}>Name</Text>
+            <View style={styles.valueContainer}>
+              <Text style={[styles.valueText, { color: theme.colors.secondaryText }]}>{onboardingData.name}</Text>
+              <User size={18} color={theme.colors.secondaryText} />
+            </View>
+          </View>
+
+          <View style={[styles.settingItem, { backgroundColor: theme.colors.cardBackground }]}>
+            <Text style={[styles.settingLabel, { color: theme.colors.text }]}>Shop Name</Text>
+            <View style={styles.valueContainer}>
+              <Text style={[styles.valueText, { color: theme.colors.secondaryText }]}>{onboardingData.shopName}</Text>
+              <Store size={18} color={theme.colors.secondaryText} />
             </View>
           </View>
         </View>
@@ -109,7 +125,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: 12,
+    marginBottom: 15,
   },
   settingItem: {
     borderRadius: 12,

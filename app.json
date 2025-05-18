@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "bolt-expo-nativewind",
-    "slug": "bolt-expo-nativewind",
+    "name": "Zaver",
+    "slug": "zaver",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -27,7 +27,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "d51d3db5-bc3f-47a3-a5a1-c20433ac84ec"
+        "projectId": "a9c7c38c-d0f8-41b4-a291-e7abeb3b8658"
       }
     },
     "android": {
@@ -45,13 +45,12 @@
           "buildType": "apk"
         }
       },
-    "production": {
-      "android": {
-        "buildType": "aab"
+      "production": {
+        "android": {
+          "buildType": "aab"
+        }
       }
-    }
-
-    }
+    },
+    "owner": "dhavansinghal"
   }
 }
-

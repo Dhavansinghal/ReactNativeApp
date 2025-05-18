@@ -110,3 +110,58 @@ export const mockHistoryData = [
   },
   
 ];
+
+
+import type { McxItem } from '@/types/metals';
+
+export const mcxData: McxItem[] = [
+  {
+    id: 'gold_mcx_present',
+    title: 'GOLD MCX PRESENT (10g)', // Added weight for clarity as in image
+    metalType: 'gold',
+    contractName: 'GOLD MCX PRESENT (10g)',
+    buy: 68979, // Example base price
+    sell: 69786, // Example base price
+    high: 89897,
+    low: 89098,
+    open: 79878,
+    close: 89987,
+  },
+  {
+    id: 'silver_mcx_present',
+    title: 'SILVER MCX PRESENT (1kg)', // Added weight for clarity as in image
+    metalType: 'silver',
+    contractName: 'SILVER MCX PRESENT (1kg)',
+    buy: 88979, // Example base price
+    sell: 89786, // Example base price
+    high: 89897,
+    low: 89098,
+    open: 79878,
+    close: 89987,
+  },
+  {
+    id: 'gold_mcx_next',
+    title: 'GOLD MCX NEXT (10g)',
+    metalType: 'gold',
+    contractName: 'GOLD MCX NEXT (10g)',
+    buy: 69200, 
+    sell: 70000,
+    high: 89897,
+    low: 89098,
+    open: 79878,
+    close: 89987,
+  },
+  {
+    id: 'silver_mcx_next',
+    title: 'SILVER MCX NEXT (1Kg)',
+    metalType: 'silver',
+    contractName: 'SILVER MCX NEXT (1Kg)',
+    buy: 89200, 
+    sell: 90000,
+    high: 91300,
+    low: 90300,
+    open: 90800,
+    close: 90750,
+  },
+  // Add more items as needed, e.g., Gold Mini, Silver Mini etc.
+];

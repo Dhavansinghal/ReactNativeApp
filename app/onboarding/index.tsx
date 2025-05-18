@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput,Image, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { useTheme } from '@/context/ThemeContext';
 import { useOnboarding } from '@/context/OnboardingContext';
-import { Phone, MapPin } from 'lucide-react-native';
+import { Phone, MapPin,User, Store } from 'lucide-react-native';
 import { saveUser } from '@/services/appwrite';
 
 
@@ -12,6 +12,8 @@ export default function OnboardingScreen() {
   const { onboardingData, updateOnboardingData, isLoading } = useOnboarding();
   const [PhoneNumber, setPhoneNumber] = useState(String);
   const [City, setCity] = useState(String)
+  const [Name, setName] = useState(String)
+  const [ShopName, setShopName] = useState(String)
 
   useEffect(() => {
     if (!isLoading && onboardingData.isComplete && onboardingData.phoneNumber) {
@@ -22,13 +24,17 @@ export default function OnboardingScreen() {
   const handleSubmit = async () => {
     if (PhoneNumber && City) {
       
-      await saveUser(PhoneNumber, City); 
+      await saveUser(PhoneNumber, City,Name,ShopName); 
 
       updateOnboardingData({
         phoneNumber: PhoneNumber,
         city: City,
+        name: Name,
+        shopName: ShopName,
+        isComplete: true
       });
-      router.push('/onboarding/pricing');
+      // router.push('/onboarding/pricing');
+      router.replace('/(tabs)');
     }
   };
 
@@ -42,7 +48,11 @@ export default function OnboardingScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.logoContainer}>
-        <Text style={[styles.logo, { color: theme.colors.gold }]}>✦</Text>
+        {/* <Text style={[styles.logo, { color: theme.colors.gold }]}></Text> */}
+        <Image
+          source={require('./../../assets/images/icon.png')} // Replace with your logo path
+          style={[styles.logo, { width: 150,height: 150 }]} // Adjust the size as needed
+        />
         <Text style={[styles.title, { color: theme.colors.text }]}>Welcome</Text>
       </View>
 
@@ -70,6 +80,28 @@ export default function OnboardingScreen() {
           />
         </View>
 
+        <View style={[styles.inputContainer, { backgroundColor: theme.colors.cardBackground }]}>
+          <User size={20} color={theme.colors.silver} />
+          <TextInput
+            style={[styles.input, { color: theme.colors.text }]}
+            placeholder="Enter your name"
+            placeholderTextColor={theme.colors.secondaryText}
+            value={Name}
+            onChangeText={(text) =>setName(text)}
+          />
+        </View>
+
+        <View style={[styles.inputContainer, { backgroundColor: theme.colors.cardBackground }]}>
+          <Store size={20} color={theme.colors.silver} />
+          <TextInput
+            style={[styles.input, { color: theme.colors.text }]}
+            placeholder="Enter your shop name"
+            placeholderTextColor={theme.colors.secondaryText}
+            value={ShopName}
+            onChangeText={(text) =>setShopName(text)}
+          />
+        </View>
+
         <TouchableOpacity
           style={[
             styles.button,
@@ -94,7 +126,8 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 20,
+    marginTop: -150,
   },
   logo: {
     fontSize: 48,

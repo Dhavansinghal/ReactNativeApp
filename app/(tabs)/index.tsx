@@ -1,73 +1,135 @@
-import { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList } from 'react-native';
+import { useCallback, useEffect, useState,useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, FlatList,TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '@/context/ThemeContext';
-import PriceCard from '@/components/PriceCard';
 import Header from '@/components/Header';
 import { connectWebSocket, closeWebSocket } from '@/services/websocketService';
 import { MetalPrice , MetalData } from '@/types/metals';
-import EditableCard from '@/components/EditableCard';
-import HighLowPriceCard from '@/components/HighLowPriceCard';
 import { router } from 'expo-router';
 import { useOnboarding } from '@/context/OnboardingContext';
 import { addPriceUpdate } from '@/services/appwrite';
+import PriceCard2 from '@/components/PriceCard2';
+import { McxItemCard } from '@/components/lib/McxItemCard'; 
+
+interface PremiumDetails {
+  buy: number;
+  sell: number;
+}
+
 
 export default function PricesScreen() {
   const { theme } = useTheme();
   const [goldPrice, setGoldPrice] = useState<MetalPrice | null>(null);
   const [silverPrice, setSilverPrice] = useState<MetalPrice | null>(null);
 
-
-
   const [listingData, setListingData] = useState<MetalData[]>();
 
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const { onboardingData, updateOnboardingData, isLoading } = useOnboarding();
-  
+  const { onboardingData, updateOnboardingData } = useOnboarding();
+
+  const [selectedGoldId, setSelectedGoldId] = useState(onboardingData.selectedGoldId);
+  const [selectedSilverId, setSelectedSilverId] = useState(onboardingData.selectedSilverId);
+
+  const selectedGoldIdRef = useRef(selectedGoldId);
+  useEffect(() => {
+    selectedGoldIdRef.current = selectedGoldId;
+  }, [selectedGoldId]);
+
+  const selectedSilverIdRef = useRef(selectedSilverId);
+  useEffect(() => {
+    selectedSilverIdRef.current = selectedSilverId;
+  }, [selectedSilverId]);
+
+  const [goldPremiums, setGoldPremiums] = useState<PremiumDetails>({ buy: onboardingData.goldBuyOn, sell: onboardingData.goldSellOn });
+  const [silverPremiums, setSilverPremiums] = useState<PremiumDetails>({ buy: onboardingData.silverBuyOn, sell: onboardingData.silverSellOn });
+
   useEffect(() => {
       if (!onboardingData.isComplete) {
         router.replace('/onboarding');
       }
-  }, [isLoading, onboardingData.isComplete]);
+  }, [ onboardingData.isComplete]);
 
 
-  const updateOnPrices = async ({price,type} :{price:String,type:String}) =>{
-    if(type == "goldOn"){
-      updateOnboardingData({ 
-        goldOn: parseFloat(price.toString()) || 0,
-      });
-
-      await addPriceUpdate(onboardingData.phoneNumber , onboardingData.city, 'Gold', parseFloat(price.toString()) || 0); 
+  const handlePremiumChange = async (metal: 'gold' | 'silver', type: 'buy' | 'sell', value: string) => {
+    const regex = /^-?\d*$/;
+    if (!regex.test(value)) {
+      return;
     }
-    else{ 
-      updateOnboardingData({ 
-        silverOn: parseFloat(price.toString()) || 0,
-      });
-      
-      await addPriceUpdate(onboardingData.phoneNumber , onboardingData.city, 'Silver', parseFloat(price.toString()) || 0); 
-          
+    
+    const numericValue = value === '' || value === '-' ? value : parseInt(value, 10);
+    
+    if (metal === 'gold') {
+      setGoldPremiums(prev => ({ ...prev, [type]: numericValue }));
+    } else {
+      setSilverPremiums(prev => ({ ...prev, [type]: numericValue }));
     }
-
-  }
-  const updateGoldPrice = (data: MetalPrice) => {
-    setGoldPrice(data);
   };
+  
 
-  const updateSilverPrice = (data: MetalPrice) => {
-    setSilverPrice(data);
+  const handlePremiumChangeBlur = async (whichOne: string) => {
+
+    if (whichOne === 'goldBuy') {
+      updateOnboardingData({ 
+        goldBuyOn: parseFloat(goldPremiums.buy.toString()) || 0,
+      });
+      await addPriceUpdate(onboardingData.phoneNumber , onboardingData.city, 'Gold', 'buy', parseFloat(goldPremiums.buy.toString()) || 0); 
+    }
+    else if (whichOne === 'goldSell') {
+      updateOnboardingData({ 
+        goldSellOn: parseFloat(goldPremiums.sell.toString()) || 0,
+      });
+      await addPriceUpdate(onboardingData.phoneNumber , onboardingData.city, 'Gold', 'sell', parseFloat(goldPremiums.sell.toString()) || 0); 
+
+    }
+    else if  (whichOne === 'silverBuy') {
+      updateOnboardingData({ 
+        silverBuyOn: parseFloat(silverPremiums.buy.toString()) || 0,
+      });
+      await addPriceUpdate(onboardingData.phoneNumber , onboardingData.city, 'Gold', 'buy', parseFloat(silverPremiums.buy.toString()) || 0); 
+    }
+    else if  (whichOne === 'silverSell') {
+      updateOnboardingData({ 
+        silverSellOn: parseFloat(silverPremiums.sell.toString()) || 0,
+      });
+      await addPriceUpdate(onboardingData.phoneNumber , onboardingData.city, 'Gold', 'sell', parseFloat(silverPremiums.sell.toString()) || 0); 
+    }
+    
   };
   
   const updateListingPrice = (data: any) => {
     setListingData(data);
+
+
+    const liveGold = data.find((item: any) => item.symbol === selectedGoldIdRef.current);
+    const liveSilver = data.find((item: any) => item.symbol === selectedSilverIdRef.current);
+    if (liveGold) {
+      setGoldPrice({
+        buy: parseFloat(liveGold.Bid),
+        sell: parseFloat(liveGold.Ask),
+        change: parseFloat(liveGold.Difference),
+        changePercent: (parseFloat(liveGold.Difference) / parseFloat(liveGold.Bid)) * 100,
+        time: liveGold.Time
+      });
+
+    }
+    if (liveSilver) {
+      setSilverPrice({
+        buy: parseFloat(liveSilver.Bid),
+        sell: parseFloat(liveSilver.Ask),   
+        change: parseFloat(liveSilver.Difference),
+        changePercent: (parseFloat(liveSilver.Difference) / parseFloat(liveSilver.Bid)) * 100,
+        time: liveSilver.Time
+      });
+    }
   };
 
   const setupWebSocket = useCallback(() => {
     connectWebSocket({
-      onGoldUpdate: updateGoldPrice,
-      onSilverUpdate: updateSilverPrice,
+      // onGoldUpdate: updateGoldPrice,
+      // onSilverUpdate: updateSilverPrice,
       onFullRefresh: updateListingPrice,
       onOpen: () => setLoading(false),
     });
@@ -76,14 +138,11 @@ export default function PricesScreen() {
   useFocusEffect(
     useCallback(() => {
       setupWebSocket();
-      
       return () => {
         closeWebSocket();
       };
     }, [setupWebSocket])
   );
-
-  const testGold = listingData?.[0] ?? undefined; 
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -94,9 +153,120 @@ export default function PricesScreen() {
     }, 2000);
   }, [setupWebSocket]);
 
-  return (
+
+  const handleSelect = (item: MetalData) => {
+    if (item.symbol.toLowerCase().includes('gold')) {
+      updateOnboardingData({ 
+        selectedGoldId: item.symbol,
+      });
+
+      setSelectedGoldId(item.symbol);
+
+      setGoldPrice({ 
+        buy: parseFloat((item.Bid).toString()),
+        sell:parseFloat((item.Ask).toString()),
+        change:parseFloat((item.Difference).toString()),
+        changePercent: parseFloat(((item.Difference / item.Bid) * 100).toFixed(2)),
+        time: item.Time
+      });
+
+    } else if (item.symbol.toLowerCase().includes('silver')) {
+      updateOnboardingData({ 
+        selectedSilverId: item.symbol,
+      });
+      setSelectedSilverId(item.symbol);
+
+      setSilverPrice({ 
+        buy: parseFloat((item.Bid).toString()),
+        sell: parseFloat((item.Ask).toString()),
+        change: parseFloat((item.Difference).toString()),
+        changePercent: parseFloat(((item.Difference / item.Bid) * 100).toFixed(2)),
+        time: item.Time
+      });
+    }
+  };
+
+  const styless = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 16,
+      backgroundColor: theme.background,
+    },
+    premiumCard: {
+      backgroundColor: theme.card,
+      borderRadius: 8,
+      padding: 16,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+    },
+    premiumCardHeader: {
+      alignItems: 'center',
+      marginBottom: 12,
+    },
+    premiumCardTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: theme.foreground,
+    },
+    premiumContent: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+    },
+    metalPremiumSection: {
+      flex: 1,
+      alignItems: 'center',
+      paddingHorizontal: 8,
+    },
+    metalTitle: {
+      fontSize: 14,
+      fontWeight: '500',
+      marginBottom: 8,
+      textAlign: 'center',
+    },
+    goldMetalTitle: { color: theme.primary },
+    silverMetalTitle: { color: theme.neutral500 },
+    inputGroup: {
+      width: '100%',
+      marginBottom: 8,
+    },
+    inputLabel: {
+      fontSize: 10,
+      color: theme.mutedForeground,
+      textAlign: 'center',
+      marginBottom: 2,
+    },
+    textInput: {
+      backgroundColor: theme.inputBackground,
+      color: theme.inputText,
+      textAlign: 'center',
+      paddingVertical: 10,
+      paddingHorizontal: 8,
+      borderRadius: 4,
+      fontSize: 14,
+      borderWidth: 1,
+      borderColor: theme.border,
+    },
+    noteText: {
+      textAlign: 'center',
+      fontSize: 10,
+      color: theme.mutedForeground,
+      marginTop: 12,
+      paddingHorizontal:16,
+    },
+    divider: {
+      width: 1,
+      backgroundColor: theme.border,
+      marginHorizontal: 8,
+    }
+  });
+
+   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <Header title="MCX Live" />
+      <Header title="Bhav" />
+     
 
         <FlatList
           contentContainerStyle={styles.scrollContent}
@@ -107,149 +277,144 @@ export default function PricesScreen() {
             <>
 
               <View style={styles.cardContainer}>
-                <PriceCard
+                <PriceCard2
                   title="Gold (XAU)"
                   symbol="Au"
-                  price={goldPrice?.price}
+                  buy={goldPrice?.buy}
+                  sell={goldPrice?.sell}
                   change={goldPrice?.change}
                   changePercent={goldPrice?.changePercent}
                   time={goldPrice?.time}
                   loading={loading}
-                  priceOn={onboardingData.goldOn}
+                  priceBuyOn={onboardingData.goldBuyOn}
+                  priceSellOn={onboardingData.goldSellOn}
                   perValue={'per 10Gm'}
                   metalType="gold"
                 />
-                <PriceCard
+
+                <PriceCard2
                   title="Silver (XAG)"
                   symbol="Ag"
-                  price={silverPrice?.price}
+                  buy={silverPrice?.buy}
+                  sell={silverPrice?.sell}
                   change={silverPrice?.change}
                   changePercent={silverPrice?.changePercent}
                   time={goldPrice?.time}
-                  priceOn={onboardingData.silverOn}
+                  priceBuyOn={onboardingData.silverBuyOn}
+                  priceSellOn={onboardingData.silverSellOn}
                   perValue={'per 1Kg'}
                   loading={loading}
                   metalType="silver"
                 />
               </View>
-              <View style={styles.editableCardsContainer}>
-                <EditableCard 
-                  label="GOLD ON" 
-                  type="goldOn"
-                  value={onboardingData.goldOn.toString()}
-                  onBlueText={({price,type}) => updateOnPrices({ price, type: type })}
-                />
-                <EditableCard 
-                  label="SILVER ON" 
-                  type="silverOn"
-                  value={onboardingData.silverOn.toString()}
-                  onBlueText={({price,type}) => updateOnPrices({ price, type: type })}
-                />
+
+              <View style={[
+                  styles.premiumContainer, 
+                  { 
+                    backgroundColor: theme.colors.cardBackground
+                  }
+                ]}>
+                <View style={styless.premiumCardHeader}>
+                  <Text style={styless.premiumCardTitle}>Set Premiums</Text>
+                </View>
+                <View style={styless.premiumContent}>
+                  {/* Gold Premiums */}
+                  <View style={styless.metalPremiumSection}>
+                    <Text style={[styless.metalTitle, styless.goldMetalTitle]}>Gold MCX Next</Text>
+                    <View style={styless.inputGroup}>
+                      <Text style={styless.inputLabel}>SELL</Text>
+                      <TextInput
+                        style={styles.input}
+                        keyboardType="number-pad"
+                        value={goldPremiums.sell === 0 ? '' : String(goldPremiums.sell)}
+                        onChangeText={(text) => handlePremiumChange('gold', 'sell', text)}
+                        onBlur={() => handlePremiumChangeBlur('goldSell')}
+                        placeholder="0"
+                        placeholderTextColor={theme.mutedForeground}
+                        maxLength={5}
+                      />
+
+                    </View>
+                    <View style={styless.inputGroup}>
+                      <Text style={styless.inputLabel}>BUY</Text>
+                      <TextInput
+                        style={styles.input}
+                        keyboardType="number-pad"
+                        value={goldPremiums.buy === 0 ? '' : String(goldPremiums.buy)}
+                        onChangeText={(text) => handlePremiumChange('gold', 'buy', text)}
+                        onBlur={() => handlePremiumChangeBlur('goldBuy')}
+                        placeholder="0"
+                        placeholderTextColor={theme.mutedForeground}
+                        maxLength={5}
+                      />
+                    </View>
+                  </View>
+                  
+                  <View style={styless.divider} />
+
+                  {/* Silver Premiums */}
+                  <View style={styless.metalPremiumSection}>
+                    <Text style={[styless.metalTitle, styless.silverMetalTitle]}>Silver MCX Next</Text>
+                    <View style={styless.inputGroup}>
+                      <Text style={styless.inputLabel}>SELL</Text>
+                      <TextInput
+                        style={styles.input}
+                        keyboardType="number-pad"
+                        value={silverPremiums.sell === 0 ? '' : String(silverPremiums.sell)}
+                        onChangeText={(text) => handlePremiumChange('silver', 'sell', text)}
+                        onBlur={() => handlePremiumChangeBlur('silverSell')}
+                        placeholder="0"
+                        placeholderTextColor={theme.mutedForeground}
+                        maxLength={5}
+                      />
+                    </View>
+                    <View style={styless.inputGroup}>
+                      <Text style={styless.inputLabel}>BUY</Text>
+                      <TextInput
+                        style={styles.input}
+                        keyboardType="number-pad"
+                        value={silverPremiums.buy === 0 ? '' : String(silverPremiums.buy)}
+                        onChangeText={(text) => handlePremiumChange('silver', 'buy', text)}
+                        onBlur={() => handlePremiumChangeBlur('silverBuy')}
+                        placeholder="0"
+                        placeholderTextColor={theme.mutedForeground}
+                        maxLength={5}
+                      />
+                    </View>
+                  </View>
+                </View>
+                <Text style={styless.noteText}>
+                  Note: please enter the premiums for gold &amp; silver up to 5 positive or 4 negative digits.
+                </Text>
               </View>
+              
             </>
           }
-          
-
           renderItem={({ item }) => (
             <View style={styles.otherListingContainer}>
               <FlatList
                 data={listingData}
                 keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => (
-                  <HighLowPriceCard
-                    label={item.symbol}
-                    value={"₹ " + item.Bid.toString()} 
-                    highValue={item.High.toString()} 
-                    lowValue={item.Low.toString()} 
-                    ltp={item.LTP.toString()} 
-                    close={item.Close.toString()} 
-                    time={item.Time}
-                    isCurrency={true}
-                  />
-                )}
+                renderItem={({ item }) => {
+                  const symbol = item.symbol?.toLowerCase();
+                  const isGold = symbol?.includes('gold');
+                  const isSilver = symbol?.includes('silver');
+                  if (isGold || isSilver) {
+                    const isSelected = isGold
+                      ? item.symbol === selectedGoldId
+                      : item.symbol === selectedSilverId;
+                    return (
+                      <McxItemCard
+                        item={item}
+                        isSelected={isSelected}
+                        onSelect={handleSelect}
+                        theme={theme}
+                      />
+                    );
+                  }
+                  return null; 
+                }}
               />
-              {/* Temp Component to fix date key values */}
-              <View style={[
-                      styles.smallContainer, 
-                      { 
-                        backgroundColor: theme.colors.cardBackground
-                      }
-                    ]}>
-                <View style={styles.header}>
-                  <Text style={styles.label}>{testGold?.symbol.toUpperCase()}</Text>
-                </View>
-                <View style={styles.highLowContainer}>
-                  <View style={styles.highLowItem}>
-                    <Text style={styles.highLowLabel}> Ask </Text>
-                    <Text style={styles.highValue}>{testGold?.Ask}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.highLowContainer}>
-                  <View style={styles.highLowItem}>
-                    <Text style={styles.highLowLabel}> Bid </Text>
-                    <Text style={styles.highValue}>{testGold?.Bid}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.highLowContainer}>
-                  <View style={styles.highLowItem}>
-                    <Text style={styles.highLowLabel}> Open </Text>
-                    <Text style={styles.highValue}>{testGold?.Open}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.highLowContainer}>
-                  <View style={styles.highLowItem}>
-                    <Text style={styles.highLowLabel}> Close </Text>
-                    <Text style={styles.highValue}>{testGold?.Close}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.highLowContainer}>
-                  <View style={styles.highLowItem}>
-                    <Text style={styles.highLowLabel}> High </Text>
-                    <Text style={styles.highValue}>{testGold?.High}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.highLowContainer}>
-                  <View style={styles.highLowItem}>
-                    <Text style={styles.highLowLabel}> Low </Text>
-                    <Text style={styles.highValue}>{testGold?.Low}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.highLowContainer}>
-                  <View style={styles.highLowItem}>
-                    <Text style={styles.highLowLabel}> LTP </Text>
-                    <Text style={styles.highValue}>{testGold?.LTP}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.highLowContainer}>
-                  <View style={styles.highLowItem}>
-                    <Text style={styles.highLowLabel}> Difference </Text>
-                    <Text style={styles.highValue}>{testGold?.Difference}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.highLowContainer}>
-                  <View style={styles.highLowItem}>
-                    <Text style={styles.highLowLabel}> Time </Text>
-                    <Text style={styles.highValue}>{testGold?.Time}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.highLowContainer}>
-                  <View style={styles.highLowItem}>
-                    <Text style={styles.highLowLabel}> Name </Text>
-                    <Text style={styles.highValue}>{testGold?.Name}</Text>
-                  </View>
-                </View>
-              </View>
-
-
               <View style={styles.infoContainer}>
                 <Text style={[styles.infoText, { color: theme.colors.secondaryText }]}>
                   All prices are in T&C
@@ -273,13 +438,22 @@ export default function PricesScreen() {
             />
           }
         />
+
     </SafeAreaView>
   );
+
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  premiumContainer: {
+    flex: 1,
+    borderRadius:25,
+    padding: 16,
+    marginBottom: 16,
+    marginTop:20
   },
   smallContainer: {
     marginBottom: 16,
@@ -312,9 +486,11 @@ const styles = StyleSheet.create({
     marginTop:20
   },
   otherListingContainer :{
-    justifyContent: 'space-between',
+    flex:1,
     marginTop:5,
-    marginBottom:5
+    marginBottom:5,
+    paddingHorizontal: 16,
+    padding: 8,
   },
 
   header: {
@@ -349,5 +525,13 @@ const styles = StyleSheet.create({
     color: '#4CAF50', // Green color
     fontSize: 16,
     fontWeight: 'bold',
-  }
+  },
+  input: {
+    color: 'white',
+    fontSize: 26,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    width: '100%',
+    textDecorationLine:'underline'
+  },
 });

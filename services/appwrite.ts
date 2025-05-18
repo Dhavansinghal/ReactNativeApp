@@ -23,9 +23,9 @@ export async function ensureSession() {
 }
 
 /** 2️⃣ create the “users” doc (ignore if it exists) */
-export async function saveUser(phone: string, city: string) {
+export async function saveUser(phone: string, city: string, name: string, shopName: string) {
   const docId = phone.replace(/[^\d]/g, '');      
-  const payload = { phone, city };
+  const payload = { phone, city,name, shopName };
   try {
     await db.createDocument(DB_ID, COL_USERS, docId, payload);
   } catch (e: any) {
@@ -38,12 +38,13 @@ export async function addPriceUpdate(
   phone: string,
   city: string,
   metal: 'Gold' | 'Silver',
-  price: number
+  type: 'buy' | 'sell',
+  price: number,
 ) {
   return db.createDocument(
     DB_ID,
     COL_UPDATES,
     ID.unique(),
-    { phone, city, metal, price, updatedAt: new Date().toISOString() }
+    { phone, city, metal, price, type, updatedAt: new Date().toISOString() }
   );
 }
