@@ -77,7 +77,7 @@ export default function TabLayout() {
           title: 'History',
           tabBarIcon: ({ size, color }) => (
             <Clock size={size} color={color} />
-          ),
+          )
         }}
       />
       <Tabs.Screen
