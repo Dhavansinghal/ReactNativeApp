@@ -8,7 +8,7 @@ export default function Index() {
 
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && onboardingData) {
       if (!onboardingData.isComplete) {
         router.replace('/onboarding');
       } else {

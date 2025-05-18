@@ -46,12 +46,6 @@ export default function PricesScreen() {
   const [goldPremiums, setGoldPremiums] = useState<PremiumDetails>({ buy: onboardingData.goldBuyOn, sell: onboardingData.goldSellOn });
   const [silverPremiums, setSilverPremiums] = useState<PremiumDetails>({ buy: onboardingData.silverBuyOn, sell: onboardingData.silverSellOn });
 
-  useEffect(() => {
-      if (!onboardingData.isComplete) {
-        router.replace('/onboarding');
-      }
-  }, [ onboardingData.isComplete]);
-
 
   const handlePremiumChange = async (metal: 'gold' | 'silver', type: 'buy' | 'sell', value: string) => {
     const regex = /^-?\d*$/;

@@ -6,8 +6,9 @@ import { Bell, MapPinHouse, Info,  CircleHelp as HelpCircle, Phone, User, Store 
 import { useOnboarding } from '@/context/OnboardingContext';
 
 export default function SettingsScreen() {
-  const { theme, toggleTheme } = useTheme();
-  const { onboardingData} = useOnboarding();
+  const { theme } = useTheme();
+
+  const { onboardingData } = useOnboarding();
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>

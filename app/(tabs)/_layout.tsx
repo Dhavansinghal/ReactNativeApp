@@ -9,7 +9,7 @@ import { useOnboarding } from '@/context/OnboardingContext';
 
 export default function TabLayout() {
   const { theme } = useTheme();
-  const { onboardingData, updateOnboardingData, isLoading } = useOnboarding();
+  
 
   const styles = StyleSheet.create({
     tabBar: {
@@ -49,41 +49,28 @@ export default function TabLayout() {
     },
   });
 
-  useEffect(() => {
-      if (!onboardingData.isComplete) {
-        
-        router.replace('/onboarding');
-      }
-    }, [isLoading, onboardingData.isComplete]);
+  const { onboardingData, isLoading } = useOnboarding();
   
-    
+  useEffect(() => {
+    if (!isLoading && !onboardingData.isComplete) {
+      const timeout = setTimeout(() => {
+        router.replace('/onboarding');
+      }, 0);
+  
+      return () => clearTimeout(timeout);
+    }
+  }, [isLoading, onboardingData.isComplete]);  
     
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        // tabBarStyle: {
-        //   backgroundColor: theme.colors.background,
-        //   borderTopColor: theme.colors.border,
-        //   height: 60,
-        //   paddingBottom: 10,
-        // },
         tabBarActiveTintColor: theme.primary,
         tabBarInactiveTintColor: theme.mutedForeground,
-
         tabBarStyle: styles.tabBar,
         tabBarLabelStyle: styles.tabLabel,
       }}>
-      
-      {/* <Tabs.Screen
-        name="charts"
-        options={{
-          title: 'Charts',
-          tabBarIcon: ({ size, color }) => (
-            <BarChart3 size={size} color={color} />
-          ),
-        }}
-      /> */}
+    
       <Tabs.Screen
         name="history"
         options={{
