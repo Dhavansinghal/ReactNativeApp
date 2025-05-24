@@ -11,8 +11,10 @@
     "preview": {
       "distribution": "internal",
       "android": {
-        "buildType": "apk",
-        "proguardRules": "proguard-rules.pro"
+        "buildType": "apk"
+      },
+       "ios": {
+        "simulator": false
       }
     },
     "production": {
