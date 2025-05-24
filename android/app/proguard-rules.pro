@@ -8,19 +8,7 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # react-native-reanimated
--keep class com.facebook.** { *; }
--dontwarn com.facebook.**
-
--keep class expo.modules.** { *; }
--dontwarn expo.modules.**
-
--keep class com.swmansion.** { *; }
--dontwarn com.swmansion.**
-
-# Optional: keep your app's package (change this to your actual package)
--keep class com.dhavansinghal.** { *; }
--dontwarn com.dhavansinghal.**
+-keep class com.swmansion.reanimated.** { *; }
+-keep class com.facebook.react.turbomodule.** { *; }
 
 # Add any project specific keep options here:
-
-
