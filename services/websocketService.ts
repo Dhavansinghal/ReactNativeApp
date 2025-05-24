@@ -124,10 +124,11 @@
 //   }
 // };
 
+import { AppState } from 'react-native';
 import io from 'socket.io-client';
-import { MetalPrice } from '@/types/metals';
 
 let sock: any = null;
+let currentState = AppState.currentState;
 
 type WebSocketCallbacks = {
   // onGoldUpdate: (data: MetalPrice) => void;
@@ -149,9 +150,14 @@ export const connectWebSocket = (newCallbacks: WebSocketCallbacks) => {
 
   // In a real implementation, we would connect to actual WebSocket
   // Using socket.io-client to establish the connection with the server
+
+  if (sock?.connected) return;
+
   sock = io('https://starlinesupport.co.in:10001', {
     transports: ['websocket'],
-    reconnection: false,
+    reconnection: true,
+    reconnectionAttempts: 10,
+    reconnectionDelay: 2000,
     rejectUnauthorized: false, // Ignore certificate issues if any
   });
 
@@ -229,3 +235,10 @@ export const closeWebSocket = () => {
     sock = null;
   }
 };
+
+AppState.addEventListener('change', nextState => {
+  if (currentState.match(/inactive|background/) && nextState === 'active') {
+    if (!sock?.connected) connectWebSocket(callbacks);
+  }
+  currentState = nextState;
+});

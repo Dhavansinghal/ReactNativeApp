@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { router } from 'expo-router';
 import { Tabs } from 'expo-router';
 import { useTheme } from '@/context/ThemeContext';
-import { ArrowUpDown, Clock, Settings } from 'lucide-react-native';
+import { ArrowUpDown, Store, Settings } from 'lucide-react-native';
 import { View,  StyleSheet } from 'react-native';
 import { useOnboarding } from '@/context/OnboardingContext';
 
@@ -72,11 +72,11 @@ export default function TabLayout() {
       }}>
     
       <Tabs.Screen
-        name="history"
+        name="marketplace"
         options={{
-          title: 'History',
+          title: 'Marketplace',
           tabBarIcon: ({ size, color }) => (
-            <Clock size={size} color={color} />
+            <Store size={size} color={color} />
           )
         }}
       />
@@ -95,13 +95,15 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="settings"
-        options={{
-          title: 'Settings',
+        options={{          title: 'Settings',
           tabBarIcon: ({ size, color }) => (
             <Settings size={size} color={color} />
           ),
         }}
       />
-    </Tabs>
+      <Tabs.Screen
+        name="shop/[id]"
+        options={{href: null}}
+      />    </Tabs>
   );
 }

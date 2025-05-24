@@ -178,13 +178,13 @@ export default function PriceCard2({
                 <View style={styless.infoSection}>
                     <Text style={[styless.labelText, { color:  theme.colors.text }]}>Buy</Text>
                     <Text style={[styless.premiumText, { color:  theme.colors.text }]}>({(priceBuyOn?priceBuyOn:0)})</Text>
-                    <Text style={[styless.priceText, { color:  theme.colors.text }]}>₹ {formatPrice((buy?buy:0) + (priceBuyOn?priceBuyOn:0))}</Text>
+                    <Text style={[styless.priceText, { color:  changeColor }]}>₹ {formatPrice((buy?buy:0) + (priceBuyOn?priceBuyOn:0))}</Text>
                 </View>
                 <View style={[styless.divider, dividerStyle]} />
                 <View style={styless.infoSection}>
                     <Text style={[styless.labelText, { color:  theme.colors.text }]}>Sell</Text>
                     <Text style={[styless.premiumText, { color:  theme.colors.text }]}>({(priceSellOn?priceSellOn:0)})</Text>
-                    <Text style={[styless.priceText, { color:  theme.colors.text }]}>₹ {formatPrice((sell?sell:0) + (priceSellOn?priceSellOn:0))}</Text>
+                    <Text style={[styless.priceText, { color:  changeColor }]}>₹ {formatPrice((sell?sell:0) + (priceSellOn?priceSellOn:0))}</Text>
                 </View>
             </View>
             </>

@@ -4,6 +4,7 @@ import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { OnboardingProvider } from '@/context/OnboardingContext';
 import { ensureSession } from '@/services/appwrite';
+import { useKeepAwake } from 'expo-keep-awake';
 
 
 import './global.css';
@@ -24,6 +25,7 @@ function InitialLayout() {
 }
 
 export default function RootLayout() {
+  useKeepAwake();
   useFrameworkReady();
   
   const [ready, setReady] = useState(false);

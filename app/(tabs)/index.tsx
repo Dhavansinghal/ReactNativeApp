@@ -272,7 +272,7 @@ export default function PricesScreen() {
 
               <View style={styles.cardContainer}>
                 <PriceCard2
-                  title="Gold (XAU)"
+                  title="Gold (995)"
                   symbol="Au"
                   buy={goldPrice?.buy}
                   sell={goldPrice?.sell}
@@ -287,7 +287,7 @@ export default function PricesScreen() {
                 />
 
                 <PriceCard2
-                  title="Silver (XAG)"
+                  title="Silver (9999)"
                   symbol="Ag"
                   buy={silverPrice?.buy}
                   sell={silverPrice?.sell}
@@ -411,13 +411,10 @@ export default function PricesScreen() {
               />
               <View style={styles.infoContainer}>
                 <Text style={[styles.infoText, { color: theme.colors.secondaryText }]}>
-                  All prices are in T&C
+                  Last updated: {new Date().toLocaleTimeString()}
                 </Text>
                 <Text style={[styles.infoText, { color: theme.colors.secondaryText }]}>
                   Data refreshes automatically in real-time
-                </Text>
-                <Text style={[styles.updateTime, { color: theme.colors.secondaryText }]}>
-                  Last updated: {new Date().toLocaleTimeString()}
                 </Text>
               </View>
             </View>
