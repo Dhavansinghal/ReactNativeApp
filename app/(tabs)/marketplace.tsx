@@ -35,7 +35,6 @@ export default function MarketplaceScreen() {
   const renderItem = ({ item }: { item: typeof mockHistoryData[0] }) => (
     <TouchableOpacity 
       style={styles.container}
-      activeOpacity={0.7}
       onPress={() => handleShopPress(item.id)}
     >
 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { View,Text,  StyleSheet, TouchableOpacity, Platform} from 'react-native';
+import { View,Text,  StyleSheet, TouchableOpacity, Platform, ScrollView} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '@/context/ThemeContext';
@@ -107,80 +107,7 @@ export default function PricesScreen() {
     }, [setupWebSocket])
   );
 
-
-   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      
-        <TouchableOpacity 
-            style={styles.backButton} 
-            onPress={handleGoBack}
-        >
-            <ChevronLeft size={24} color={"#333"} />
-        </TouchableOpacity>
-        <Header title="Marketplace" />
-
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            Shop Information
-          </Text>
-          
-          <View style={[styles.settingItem, { backgroundColor: theme.colors.cardBackground }]}>
-            
-            <View style={styles.valueContainer}>
-              <Phone size={18} color={theme.colors.secondaryText} />
-              <Text style={[styles.valueText, { color: theme.colors.secondaryText }]}>{shop.phoneNumber}</Text>
-            </View>
-            <View style={styles.valueContainer}>
-                <Store size={18} color={theme.colors.secondaryText} />
-              <Text style={[styles.valueText, { color: theme.colors.secondaryText }]}>{shop.shopName}</Text>
-            </View>
-            <View style={styles.valueContainer}>
-                <MapPinHouse size={18} color={theme.colors.secondaryText} />
-              <Text style={[styles.valueText, { color: theme.colors.secondaryText }]}>{shop.shopCity}</Text>
-            </View>
-          </View>
-          
-
-        </View>
-
-        <View style={styles.cardContainer}>
-          <PriceCard2
-            title="Gold (995)"
-            symbol="Au"
-            buy={goldPrice?.buy}
-            sell={goldPrice?.sell}
-            change={goldPrice?.change}
-            changePercent={goldPrice?.changePercent}
-            time={goldPrice?.time}
-            loading={loading}
-            priceBuyOn={2000}
-            priceSellOn={2000}
-            perValue={'per 10Gm'}
-            metalType="gold"
-          />
-
-          <PriceCard2
-            title="Silver (9999)"
-            symbol="Ag"
-            buy={silverPrice?.buy}
-            sell={silverPrice?.sell}
-            change={silverPrice?.change}
-            changePercent={silverPrice?.changePercent}
-            time={goldPrice?.time}
-            priceBuyOn={2000}
-            priceSellOn={2000}
-            perValue={'per 1Kg'}
-            loading={loading}
-            metalType="silver"
-          />
-        </View>
-
-    </SafeAreaView>
-  );
-
-}
-
-const styles = StyleSheet.create({
+  const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -200,6 +127,21 @@ const styles = StyleSheet.create({
     shadowRadius: 1.5,
     elevation: 2,
   },
+  shopCard: {
+  borderRadius: 12,
+  padding: 16,
+  backgroundColor: theme.colors.cardBackground,
+  gap: 8,                  // space between the three rows
+},
+row: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+valueText: {
+  marginLeft: 10,
+  fontSize: 14,
+  color: theme.colors.secondaryText,
+},
   section: {
     marginBottom: 24,
     padding:20
@@ -207,10 +149,6 @@ const styles = StyleSheet.create({
   valueContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  valueText: {
-    marginLeft: 10,
-    fontSize: 14,
   },
   settingItem: {
     borderRadius: 12,
@@ -315,3 +253,85 @@ const styles = StyleSheet.create({
     textDecorationLine:'underline'
   },
 });
+
+
+   return (
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      
+        <TouchableOpacity 
+            style={styles.backButton} 
+            onPress={handleGoBack}
+        >
+            <ChevronLeft size={24} color={"#333"} />
+        </TouchableOpacity>
+        <Header title="Marketplace" />
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent }>
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              Shop Information
+            </Text>
+            
+      
+
+            <View style={styles.shopCard}>
+              <View style={styles.row}>
+                <Phone size={18} color={theme.colors.secondaryText} />
+                <Text style={styles.valueText}>{shop.phoneNumber}</Text>
+              </View>
+
+              <View style={styles.row}>
+                <Store size={18} color={theme.colors.secondaryText} />
+                <Text style={styles.valueText}>{shop.shopName}</Text>
+              </View>
+
+              <View style={styles.row}>
+                <MapPinHouse size={18} color={theme.colors.secondaryText} />
+                <Text style={styles.valueText}>{shop.shopCity}</Text>
+              </View>
+            </View>
+            
+
+          </View>
+
+         
+     
+        <View style={styles.cardContainer}>
+          <PriceCard2
+            title="Gold (995)"
+            symbol="Au"
+            buy={goldPrice?.buy}
+            sell={goldPrice?.sell}
+            change={goldPrice?.change}
+            changePercent={goldPrice?.changePercent}
+            time={goldPrice?.time}
+            loading={loading}
+            priceBuyOn={2000}
+            priceSellOn={2000}
+            perValue={'per 10Gm'}
+            metalType="gold"
+          />
+
+          <PriceCard2
+            title="Silver (9999)"
+            symbol="Ag"
+            buy={silverPrice?.buy}
+            sell={silverPrice?.sell}
+            change={silverPrice?.change}
+            changePercent={silverPrice?.changePercent}
+            time={goldPrice?.time}
+            priceBuyOn={2000}
+            priceSellOn={2000}
+            perValue={'per 1Kg'}
+            loading={loading}
+            metalType="silver"
+          />
+        </View>
+     </ScrollView>
+    </SafeAreaView>
+  );
+
+}
+
